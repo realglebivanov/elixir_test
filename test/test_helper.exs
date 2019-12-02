@@ -1,0 +1,2 @@
+ExUnit.start()
+Test.start([], [])
