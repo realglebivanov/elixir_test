@@ -11,7 +11,7 @@ defmodule Test.Domain.Invites.Create do
   end
 
   defp not_invited(clan, player) do
-    case Invites.find_by(fn invite -> invite.clan_id == clan.id && invite.player_id == player.id end) do
+    case Invites.find_for_clan_and_player(clan, player) do
       {:ok, _} -> {:error, :cannot_invite_player_twice}
       _ -> :ok
     end

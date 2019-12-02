@@ -10,6 +10,7 @@ defmodule Test.Repositories.Repository do
       def init(state), do: {:ok, state}
 
       def find(id), do: GenServer.call(__MODULE__, {:find, id})
+      def delete(id), do: GenServer.call(__MODULE__, {:delete, id})
       def find_by(predicate), do: GenServer.call(__MODULE__, {:find_by, predicate})
       def create(attributes), do: GenServer.call(__MODULE__, {:create, attributes})
       def save(record), do: GenServer.call(__MODULE__, {:save, record})
@@ -18,6 +19,14 @@ defmodule Test.Repositories.Repository do
         record = records[id]
         reply = if is_nil(record), do: {:error, :not_found}, else: {:ok, record}
         {:reply, reply, state}
+      end
+
+      def handle_call({:delete, id}, _from, %{records: records, max_id: max_id} = state) do
+        if Map.has_key?(records, id) do
+          {:reply, :ok, %{max_id: max_id, records: Map.delete(records, id)}}
+        else
+          {:reply, {:error, :not_found}, state}
+        end
       end
 
       def handle_call({:find_by, predicate}, _from, %{records: records} = state) do
